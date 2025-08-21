@@ -1,0 +1,50 @@
+services:
+  cobalt:
+    image: ghcr.io/imputnet/cobalt:11  # Latest stable image as of now (version 11).
+    init: true
+    read_only: true
+    restart: unless-stopped
+    container_name: cobalt
+    ports:
+      - 9000:9000/tcp  # Maps host port 9000 to container port 9000.
+    environment:
+      # Required: The public URL of your API, must end with /.
+      # For local testing, use: http://localhost:9000/
+      # For public deployment, use your domain: https://your-api-domain.com/
+      API_URL: "https://api.cobalt.tools/"
+
+      # Required for CORS: Set to your frontend's URL (e.g., your Vercel domain).
+      # For local testing, use: http://localhost:5173 (default SvelteKit dev port).
+      # For production, use: https://your-vercel-app.vercel.app
+      CORS_ORIGIN: "https://cobalt-web-umber.vercel.app"
+
+      # Set to 0 for strict CORS (recommended); use 1 for wildcard (*) if testing.
+      CORS_WILDCARD: "0"
+
+      # Optional: Uncomment for services like Instagram requiring cookies.
+      # COOKIE_PATH: "/cookies.json"
+
+      # Optional: Add Turnstile for bot protection (get keys from Cloudflare dashboard).
+      # TURNSTILE_SITEKEY: "your-cloudflare-sitekey"
+      # TURNSTILE_SECRET: "your-cloudflare-secret"
+
+      # Optional: Enable JWT-based auth for extra security.
+      # JWT_SECRET: "your-secure-random-string"
+      # API_REQUIRE_AUTH: "1"
+
+      # Optional: Rate limit (requests per minute).
+      # API_RATE_LIMIT: "100"
+
+    labels:
+      - com.centurylinklabs.watchtower.scope=cobalt
+
+    # Uncomment if using COOKIE_PATH for cookies.json.
+    # volumes:
+    #   - ./cookies.json:/cookies.json
+
+  watchtower:
+    image: ghcr.io/containrrr/watchtower
+    restart: unless-stopped
+    command: --cleanup --scope cobalt --interval 900 --include-restarting
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
