@@ -38,10 +38,9 @@ const config = {
   ],
   kit: {
     adapter: adapter({
-      // default options are shown. On some platforms
-      // these options are set automatically — see below
-      pages: 'build',
-      assets: 'build',
+      // Changed to 'public' to match Vercel's expected output directory for static sites
+      pages: 'public',
+      assets: 'public',
       fallback: '404.html',
       precompress: false,
       strict: true
