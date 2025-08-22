@@ -1,0 +1,23 @@
+app = "cobalt-api"  # Replace with a unique name, e.g., cobalt-api-yourusername.
+primary_region = "iad"  # Choose a region close to you (e.g., iad for US East, sjc for US West).
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  API_URL = "https://cobalt-api.fly.dev/"  # Update after getting Fly.io URL, must end with /.
+  CORS_ORIGIN = "https://cobalt-web-umber.vercel.app"  # Your frontend URL.
+  CORS_WILDCARD = "0"  # Strict CORS.
+  API_RATE_LIMIT = "100"  # Requests per minute, adjust as needed.
+
+[http_service]
+  internal_port = 9000
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ["app"]
+
+[mounts]
+  source = "cobalt_data"
+  destination = "/data"
